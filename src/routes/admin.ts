@@ -17,7 +17,7 @@ export async function adminRoutes(fastify: FastifyInstance) {
       // Import queues dynamically
       const { scraperQueue } = await import('../queues/scraper.queue')
 
-      const job = await scraperQueue.add(
+      const job = await scraperQueue?.add(
         `scrape-${scraperName}`,
         { scraperName },
         {
@@ -30,7 +30,7 @@ export async function adminRoutes(fastify: FastifyInstance) {
       )
 
       return reply.status(202).send({
-        jobId: job.id,
+        jobId: job?.id,
         scraperName,
         status: 'queued',
       })

@@ -10,7 +10,7 @@ import { NSEScraper } from '../scrapers/nse.scraper'
 import { NewsScraper } from '../scrapers/news.scraper'
 import { WorldBankScraper } from '../scrapers/worldbank.scraper'
 
-export const scraperQueue = new Queue('scrapers', { connection: redis })
+export const scraperQueue = redis ? new Queue('scrapers', { connection: redis }) : null
 
 const scraperMap: Record<string, any> = {
   cbk: CBKScraper,
@@ -62,13 +62,13 @@ export const scraperWorker = new Worker('scrapers', async (job) => {
 
     throw err
   }
-}, { connection: redis, concurrency: 2 })
+}, { connection: redis!, concurrency: 2 })
 
 scraperWorker.on('failed', (job, err) => {
   logger.error(`Job ${job?.id} failed:`, err)
 })
 
 export async function closeScraperQueue() {
-  await scraperQueue.close()
+  await scraperQueue?.close()
   await scraperWorker.close()
 }

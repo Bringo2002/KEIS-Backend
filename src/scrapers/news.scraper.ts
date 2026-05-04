@@ -38,11 +38,12 @@ export class NewsScraper extends BaseScraper {
 
             // Check if URL already cached (7-day TTL)
             const cacheKey = `news-url:${link}`
-            const cached = await redis.get(cacheKey)
-
-            if (cached) {
-              this.logInfo(`URL already processed: ${link}`)
-              continue
+            if (redis) {
+              const cached = await redis.get(cacheKey)
+              if (cached) {
+                this.logInfo(`URL already processed: ${link}`)
+                continue
+              }
             }
 
             // Fetch full article
@@ -57,7 +58,7 @@ export class NewsScraper extends BaseScraper {
               await enqueueExtractEvent(articleText, link, new Date(pubDate || Date.now()))
 
               // Cache the URL
-              await redis.setex(cacheKey, 7 * 24 * 60 * 60, '1')
+              if (redis) await redis.setex(cacheKey, 7 * 24 * 60 * 60, '1')
 
               itemsFound++
               itemsNew++

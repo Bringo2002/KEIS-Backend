@@ -12,25 +12,25 @@ export function startSchedulers() {
   // CBK: every 6 hours
   cron.schedule('0 */6 * * *', () => {
     logger.info('Scheduled: CBK scraper')
-    scraperQueue.add('scrape-cbk', { scraperName: 'cbk' })
+    scraperQueue?.add('scrape-cbk', { scraperName: 'cbk' })
   })
 
   // NSE: hourly, weekdays 9am-5pm EAT (adjusted for UTC)
   cron.schedule('0 6-14 * * 1-5', () => {
     logger.info('Scheduled: NSE scraper')
-    scraperQueue.add('scrape-nse', { scraperName: 'nse' })
+    scraperQueue?.add('scrape-nse', { scraperName: 'nse' })
   })
 
   // News: every 2 hours
   cron.schedule('0 */2 * * *', () => {
     logger.info('Scheduled: News scraper')
-    scraperQueue.add('scrape-news', { scraperName: 'news' })
+    scraperQueue?.add('scrape-news', { scraperName: 'news' })
   })
 
   // World Bank: daily 6am EAT (3am UTC)
   cron.schedule('0 3 * * *', () => {
     logger.info('Scheduled: World Bank scraper')
-    scraperQueue.add('scrape-worldbank', { scraperName: 'worldbank' })
+    scraperQueue?.add('scrape-worldbank', { scraperName: 'worldbank' })
   })
 
   // Profile refresh: Sunday 2am EAT (11pm previous day UTC)

@@ -6,7 +6,7 @@ import { ProfileUpdater } from '../ai/profileUpdater'
 import { RiskAnalyzer } from '../ai/riskAnalyzer'
 import { EventService } from '../services/event.service'
 
-export const aiQueue = new Queue('ai', { connection: redis })
+export const aiQueue = redis ? new Queue('ai', { connection: redis }) : null
 
 export const aiWorker = new Worker(
   'ai',
@@ -30,7 +30,7 @@ export const aiWorker = new Worker(
       throw err
     }
   },
-  { connection: redis, concurrency: 5, limiter: { max: 50, duration: 60_000 } }
+  { connection: redis!, concurrency: 5, limiter: { max: 50, duration: 60_000 } }
 )
 
 async function handleExtractEvent(payload: any) {
@@ -87,18 +87,18 @@ aiWorker.on('failed', (job, err) => {
 })
 
 export async function enqueueExtractEvent(text: string, url: string, date: Date) {
-  return aiQueue.add('extract-event', { text, url, date }, { attempts: 2 })
+  return aiQueue?.add('extract-event', { text, url, date }, { attempts: 2 })
 }
 
 export async function enqueueUpdateProfile(playerId: string) {
-  return aiQueue.add('update-profile', { playerId }, { attempts: 2 })
+  return aiQueue?.add('update-profile', { playerId }, { attempts: 2 })
 }
 
 export async function enqueueAnalyzeRisk(playerId: string) {
-  return aiQueue.add('analyze-risk', { playerId }, { attempts: 2 })
+  return aiQueue?.add('analyze-risk', { playerId }, { attempts: 2 })
 }
 
 export async function closeAIQueue() {
-  await aiQueue.close()
+  await aiQueue?.close()
   await aiWorker.close()
 }

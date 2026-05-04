@@ -5,8 +5,8 @@ const envSchema = z.object({
   NODE_ENV: z.enum(['development', 'production', 'test']).default('development'),
   PORT: z.coerce.number().default(3002),
   DATABASE_URL: z.string().url(),
-  REDIS_URL: z.string().url(),
-  ANTHROPIC_API_KEY: z.string().startsWith('sk-ant-'),
+  REDIS_URL: z.string().optional().or(z.literal('').transform(() => undefined)),
+  ANTHROPIC_API_KEY: z.string().optional().or(z.literal('').transform(() => undefined)),
   FRONTEND_URL: z.string().url().default('http://localhost:5173'),
   LOG_LEVEL: z.enum(['debug', 'info', 'warn', 'error']).default('info'),
 })
