@@ -36,7 +36,6 @@ export class PlayerService {
           eventPlayers: {
             with: { event: true },
             limit: 10,
-            orderBy: desc(economicEvents.date),
           },
         },
         limit,
@@ -67,7 +66,6 @@ export class PlayerService {
         eventPlayers: {
           with: { event: true },
           limit: 10,
-          orderBy: desc(economicEvents.date),
         },
       },
     })
