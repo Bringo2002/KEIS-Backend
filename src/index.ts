@@ -14,12 +14,23 @@ const fastify = Fastify({
   logger: logger as any,
 })
 
+const normalizeOrigin = (origin: string): string => origin.replace(/\/+$/, '')
+
 async function start() {
   try {
     // Register plugins
     await fastify.register(helmet)
+    const allowedOrigin = normalizeOrigin(config.FRONTEND_URL)
     await fastify.register(cors, {
-      origin: config.FRONTEND_URL,
+      origin: (origin, callback) => {
+        // Allow non-browser/server-to-server requests without an Origin header.
+        if (!origin) return callback(null, true)
+
+        const requestOrigin = normalizeOrigin(origin)
+        if (requestOrigin === allowedOrigin) return callback(null, true)
+
+        return callback(new Error('Not allowed by CORS'), false)
+      },
     })
     await fastify.register(rateLimit, {
       max: 100,
