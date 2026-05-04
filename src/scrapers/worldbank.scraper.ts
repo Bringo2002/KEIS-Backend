@@ -4,8 +4,10 @@ import { IndicatorService } from '../services/indicator.service'
 
 const INDICATORS = [
   { code: 'NY.GDP.MKTP.KD.ZG', slug: 'gdp-growth', name: 'GDP Growth (%)' },
-  { code: 'FP.CPI.TOTL.ZG', slug: 'inflation', name: 'Inflation (%)' },
-  { code: 'GC.DOD.TOTL.GD.ZS', slug: 'debt-gdp', name: 'Debt to GDP (%)' },
+  /** Must match seeded slug `cpi-inflation` */
+  { code: 'FP.CPI.TOTL.ZG', slug: 'cpi-inflation', name: 'Inflation (%)' },
+  /** Must match seeded slug `debt-to-gdp` */
+  { code: 'GC.DOD.TOTL.GD.ZS', slug: 'debt-to-gdp', name: 'Debt to GDP (%)' },
 ]
 
 export class WorldBankScraper extends BaseScraper {
@@ -18,7 +20,7 @@ export class WorldBankScraper extends BaseScraper {
 
     for (const indicator of INDICATORS) {
       try {
-        const url = `https://api.worldbank.org/v2/country/KEN/indicator/${indicator.code}?format=json&per_page=24&date=2000:2024`
+        const url = `https://api.worldbank.org/v2/country/KEN/indicator/${indicator.code}?format=json&per_page=24&date=2000:2026`
 
         const response = await fetch(url, { signal: AbortSignal.timeout(10000) })
         if (!response.ok) throw new Error(`Failed to fetch: ${response.statusText}`)

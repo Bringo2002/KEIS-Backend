@@ -1,6 +1,6 @@
 import { db } from '../db'
 import { players, relationships, economicEvents, eventPlayers, playerProfileHistory } from '../../drizzle/schema'
-import { eq, and, or, ilike, desc, asc, lt } from 'drizzle-orm'
+import { eq, and, or, ilike, desc, asc, count } from 'drizzle-orm'
 import { CreatePlayerInput, UpdatePlayerInput } from '../schemas/player.schema'
 import slugify from 'slugify'
 
@@ -23,9 +23,11 @@ export class PlayerService {
       tags && tags.length > 0 ? and(...tags.map((tag) => ilike(players.tags as any, `%${tag}%`))) : undefined,
     ].filter(Boolean)
 
-    const [data, countResult] = await Promise.all([
+    const whereClause = conditions.length > 0 ? and(...(conditions as any)) : undefined
+
+    const [data, countRows] = await Promise.all([
       db.query.players.findMany({
-        where: conditions.length > 0 ? and(...(conditions as any)) : undefined,
+        where: whereClause,
         with: {
           relationshipsFrom: {
             with: { target: true },
@@ -42,13 +44,10 @@ export class PlayerService {
         offset,
         orderBy: asc(players.name),
       }),
-      db
-        .select({ count: players.id })
-        .from(players)
-        .where(conditions.length > 0 ? and(...(conditions as any)) : undefined),
+      db.select({ total: count() }).from(players).where(whereClause),
     ])
 
-    const total = countResult[0]?.count ? Object.keys(countResult[0]).length : 0
+    const total = Number(countRows[0]?.total ?? 0)
 
     return { data, total }
   }

@@ -979,6 +979,13 @@ const GDP_SERIES = [
   5.0, 5.0, 4.9, 4.9, 4.8, 4.9, 5.0, 5.1,
 ]
 
+// Central government debt as % of GDP (World Bank GC.DOD.TOTL.GD.ZS — illustrative series)
+const DEBT_GDP_SERIES = [
+  71.0, 70.5, 70.2, 69.8, 69.5, 69.0, 68.8, 68.5,
+  68.2, 67.9, 67.6, 67.3, 67.0, 66.8, 66.5, 66.2,
+  66.0, 65.8, 65.5, 65.2, 64.9, 64.8, 65.0, 65.2,
+]
+
 // Forex reserves: months of import cover
 const FOREX_SERIES = [
   4.2, 4.1, 4.0, 3.9, 3.8, 3.7, 3.8, 3.9,
@@ -1052,6 +1059,17 @@ const INDICATORS = [
     changePercent: 0.1,
     source: 'World Bank / KNBS',
     series: GDP_SERIES,
+  },
+  {
+    id: 'indicator-debt-gdp',
+    slug: 'debt-to-gdp',
+    name: 'Government Debt to GDP',
+    value: 68.5,
+    unit: '%',
+    trend: 'STABLE' as const,
+    changePercent: 0.2,
+    source: 'World Bank',
+    series: DEBT_GDP_SERIES,
   },
   {
     id: 'indicator-forex',

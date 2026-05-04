@@ -9,6 +9,27 @@ const RSS_FEEDS = [
   'https://feeds.nation.co.ke/feeds/rss/20180328/39146/',
 ]
 
+/** Strip CDATA wrappers and trim (RSS titles/links often wrap CDATA). */
+function rssPlainText(raw: string): string {
+  return raw.replace(/^<!\[CDATA\[|\]\]>$/g, '').trim()
+}
+
+function rssItemTitle($: cheerio.CheerioAPI, item: cheerio.AnyNode): string {
+  return rssPlainText($(item).find('title').first().text())
+}
+
+function rssItemLink($: cheerio.CheerioAPI, item: cheerio.AnyNode): string {
+  const linkEl = $(item).find('link').first()
+  const href = linkEl.attr('href')
+  if (href) return rssPlainText(href)
+  const text = rssPlainText(linkEl.text())
+  if (text) return text
+  const guid = $(item).find('guid').first()
+  const guidHref = guid.attr('href')
+  if (guidHref) return rssPlainText(guidHref)
+  return rssPlainText(guid.text())
+}
+
 export class NewsScraper extends BaseScraper {
   readonly name = 'news'
 
@@ -26,13 +47,13 @@ export class NewsScraper extends BaseScraper {
         const $ = cheerio.load(xml)
 
         // Parse RSS items
-        const items = $('item').slice(0, 10) // Get latest 10
+        const items = $('item').slice(0, 10).toArray() // Latest 10
 
         for (const item of items) {
           try {
-            const title = $(item).find('title').text()
-            const link = $(item).find('link').text()
-            const pubDate = $(item).find('pubDate').text()
+            const title = rssItemTitle($, item)
+            const link = rssItemLink($, item)
+            const pubDate = rssPlainText($(item).find('pubDate').first().text())
 
             if (!title || !link) continue
 
@@ -55,7 +76,8 @@ export class NewsScraper extends BaseScraper {
               const articleText = cheerio.load(articleHtml).text().substring(0, 5000)
 
               // Enqueue for AI extraction
-              await enqueueExtractEvent(articleText, link, new Date(pubDate || Date.now()))
+              const publishedAt = pubDate ? Date.parse(pubDate) : Date.now()
+              await enqueueExtractEvent(articleText, link, new Date(Number.isNaN(publishedAt) ? Date.now() : publishedAt))
 
               // Cache the URL
               if (redis) await redis.setex(cacheKey, 7 * 24 * 60 * 60, '1')
@@ -70,7 +92,7 @@ export class NewsScraper extends BaseScraper {
             errors.push(this.handleItemError('RSS Item', err))
           }
         }
-      } catch (err: any) {
+      } catch (err: unknown) {
         errors.push(this.handleItemError(`Feed ${feed}`, err))
       }
     }

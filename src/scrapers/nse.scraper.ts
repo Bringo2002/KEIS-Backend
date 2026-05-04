@@ -38,7 +38,7 @@ export class NSEScraper extends BaseScraper {
         const nse20Match = nse20Text.match(/NSE 20[:\s]+(\d+\.?\d*)/i)
         if (nse20Match) {
           const nse20Value = parseFloat(nse20Match[1])
-          await IndicatorService.upsertDataPoint('nse-20', new Date(), nse20Value)
+          await IndicatorService.upsertDataPoint('nse-20-index', new Date(), nse20Value)
           itemsFound++
           itemsNew++
           this.logInfo(`NSE 20: ${nse20Value}`)

@@ -1,6 +1,6 @@
 import { db } from '../db'
 import { macroIndicators, indicatorDataPoints, indicatorPlayers } from '../../drizzle/schema'
-import { eq, desc, asc } from 'drizzle-orm'
+import { eq, desc, asc, count, and } from 'drizzle-orm'
 import { CreateIndicatorInput, UpdateIndicatorInput, DataPointInput } from '../schemas/indicator.schema'
 
 export class IndicatorService {
@@ -17,11 +17,11 @@ export class IndicatorService {
       offset,
     })
 
-    const countResult = await db.select({ count: macroIndicators.id }).from(macroIndicators)
+    const totalRows = await db.select({ total: count() }).from(macroIndicators)
 
     return {
       data: indicators,
-      total: countResult.length,
+      total: Number(totalRows[0]?.total ?? 0),
     }
   }
 
@@ -142,10 +142,6 @@ export class IndicatorService {
 
     await db
       .delete(indicatorPlayers)
-      .where(
-        indicator
-          ? undefined
-          : undefined
-      )
+      .where(and(eq(indicatorPlayers.indicatorId, indicator.id), eq(indicatorPlayers.playerId, playerId)))
   }
 }
