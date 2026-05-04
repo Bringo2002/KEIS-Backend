@@ -1,0 +1,1 @@
+{"version":3,"file":"eventExtractor.d.ts","sourceRoot":"","sources":["eventExtractor.ts"],"names":[],"mappings":"AAIA,OAAO,EAAE,cAAc,EAAE,MAAM,UAAU,CAAA;AAEzC,qBAAa,cAAc;WACZ,OAAO,CAAC,IAAI,EAAE,MAAM,EAAE,GAAG,EAAE,MAAM,GAAG,OAAO,CAAC,cAAc,GAAG,IAAI,CAAC;CAqEhF"}

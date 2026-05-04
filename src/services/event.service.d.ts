@@ -1,0 +1,174 @@
+import { CreateEventInput, UpdateEventInput } from '../schemas/event.schema';
+export declare class EventService {
+    static getAll(sector?: string, impactType?: string, impactLevel?: string, playerId?: string, from?: Date, to?: Date, limit?: number, offset?: number): Promise<{
+        data: {
+            date: Date;
+            id: string;
+            description: string;
+            tags: string[];
+            createdAt: Date;
+            updatedAt: Date;
+            title: string;
+            impact: "LOW" | "MEDIUM" | "HIGH";
+            impactType: "POSITIVE" | "NEGATIVE" | "NEUTRAL";
+            sectors: ("BANKING" | "TELECOMMUNICATIONS" | "ENERGY" | "MANUFACTURING" | "AGRICULTURE" | "REAL_ESTATE" | "GOVERNMENT" | "REGULATION" | "DIVERSIFIED" | "INSURANCE" | "FINTECH" | "RETAIL" | "MEDIA" | "TRANSPORT")[];
+            source: string | null;
+            sourceUrl: string | null;
+            isAiExtracted: boolean;
+            rawContent: string | null;
+            eventPlayers: {
+                eventId: string;
+                playerId: string;
+                player: {
+                    type: "LISTED_COMPANY" | "SOE" | "REGULATOR" | "MINISTRY" | "GOVERNMENT_AGENCY" | "PRIVATE_COMPANY" | "SUBSIDIARY" | "INTERNATIONAL_ORG" | "SACCO" | "BANK";
+                    sector: "BANKING" | "TELECOMMUNICATIONS" | "ENERGY" | "MANUFACTURING" | "AGRICULTURE" | "REAL_ESTATE" | "GOVERNMENT" | "REGULATION" | "DIVERSIFIED" | "INSURANCE" | "FINTECH" | "RETAIL" | "MEDIA" | "TRANSPORT";
+                    id: string;
+                    name: string;
+                    slug: string;
+                    subtype: string;
+                    founded: number | null;
+                    hq: string | null;
+                    ownership: string | null;
+                    revenue: string | null;
+                    employees: string | null;
+                    marketCap: string | null;
+                    description: string;
+                    keyFacts: string[];
+                    tags: string[];
+                    riskLevel: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+                    isActive: boolean;
+                    createdAt: Date;
+                    updatedAt: Date;
+                };
+            }[];
+        }[];
+        total: number;
+    }>;
+    static getById(id: string): Promise<{
+        date: Date;
+        id: string;
+        description: string;
+        tags: string[];
+        createdAt: Date;
+        updatedAt: Date;
+        title: string;
+        impact: "LOW" | "MEDIUM" | "HIGH";
+        impactType: "POSITIVE" | "NEGATIVE" | "NEUTRAL";
+        sectors: ("BANKING" | "TELECOMMUNICATIONS" | "ENERGY" | "MANUFACTURING" | "AGRICULTURE" | "REAL_ESTATE" | "GOVERNMENT" | "REGULATION" | "DIVERSIFIED" | "INSURANCE" | "FINTECH" | "RETAIL" | "MEDIA" | "TRANSPORT")[];
+        source: string | null;
+        sourceUrl: string | null;
+        isAiExtracted: boolean;
+        rawContent: string | null;
+        eventPlayers: {
+            eventId: string;
+            playerId: string;
+            player: {
+                type: "LISTED_COMPANY" | "SOE" | "REGULATOR" | "MINISTRY" | "GOVERNMENT_AGENCY" | "PRIVATE_COMPANY" | "SUBSIDIARY" | "INTERNATIONAL_ORG" | "SACCO" | "BANK";
+                sector: "BANKING" | "TELECOMMUNICATIONS" | "ENERGY" | "MANUFACTURING" | "AGRICULTURE" | "REAL_ESTATE" | "GOVERNMENT" | "REGULATION" | "DIVERSIFIED" | "INSURANCE" | "FINTECH" | "RETAIL" | "MEDIA" | "TRANSPORT";
+                id: string;
+                name: string;
+                slug: string;
+                subtype: string;
+                founded: number | null;
+                hq: string | null;
+                ownership: string | null;
+                revenue: string | null;
+                employees: string | null;
+                marketCap: string | null;
+                description: string;
+                keyFacts: string[];
+                tags: string[];
+                riskLevel: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+                isActive: boolean;
+                createdAt: Date;
+                updatedAt: Date;
+            };
+        }[];
+    } | undefined>;
+    static create(input: CreateEventInput): Promise<{
+        date: Date;
+        id: string;
+        description: string;
+        tags: string[];
+        createdAt: Date;
+        updatedAt: Date;
+        title: string;
+        impact: "LOW" | "MEDIUM" | "HIGH";
+        impactType: "POSITIVE" | "NEGATIVE" | "NEUTRAL";
+        sectors: ("BANKING" | "TELECOMMUNICATIONS" | "ENERGY" | "MANUFACTURING" | "AGRICULTURE" | "REAL_ESTATE" | "GOVERNMENT" | "REGULATION" | "DIVERSIFIED" | "INSURANCE" | "FINTECH" | "RETAIL" | "MEDIA" | "TRANSPORT")[];
+        source: string | null;
+        sourceUrl: string | null;
+        isAiExtracted: boolean;
+        rawContent: string | null;
+        eventPlayers: {
+            eventId: string;
+            playerId: string;
+            player: {
+                type: "LISTED_COMPANY" | "SOE" | "REGULATOR" | "MINISTRY" | "GOVERNMENT_AGENCY" | "PRIVATE_COMPANY" | "SUBSIDIARY" | "INTERNATIONAL_ORG" | "SACCO" | "BANK";
+                sector: "BANKING" | "TELECOMMUNICATIONS" | "ENERGY" | "MANUFACTURING" | "AGRICULTURE" | "REAL_ESTATE" | "GOVERNMENT" | "REGULATION" | "DIVERSIFIED" | "INSURANCE" | "FINTECH" | "RETAIL" | "MEDIA" | "TRANSPORT";
+                id: string;
+                name: string;
+                slug: string;
+                subtype: string;
+                founded: number | null;
+                hq: string | null;
+                ownership: string | null;
+                revenue: string | null;
+                employees: string | null;
+                marketCap: string | null;
+                description: string;
+                keyFacts: string[];
+                tags: string[];
+                riskLevel: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+                isActive: boolean;
+                createdAt: Date;
+                updatedAt: Date;
+            };
+        }[];
+    } | undefined>;
+    static update(id: string, input: UpdateEventInput): Promise<{
+        date: Date;
+        id: string;
+        description: string;
+        tags: string[];
+        createdAt: Date;
+        updatedAt: Date;
+        title: string;
+        impact: "LOW" | "MEDIUM" | "HIGH";
+        impactType: "POSITIVE" | "NEGATIVE" | "NEUTRAL";
+        sectors: ("BANKING" | "TELECOMMUNICATIONS" | "ENERGY" | "MANUFACTURING" | "AGRICULTURE" | "REAL_ESTATE" | "GOVERNMENT" | "REGULATION" | "DIVERSIFIED" | "INSURANCE" | "FINTECH" | "RETAIL" | "MEDIA" | "TRANSPORT")[];
+        source: string | null;
+        sourceUrl: string | null;
+        isAiExtracted: boolean;
+        rawContent: string | null;
+        eventPlayers: {
+            eventId: string;
+            playerId: string;
+            player: {
+                type: "LISTED_COMPANY" | "SOE" | "REGULATOR" | "MINISTRY" | "GOVERNMENT_AGENCY" | "PRIVATE_COMPANY" | "SUBSIDIARY" | "INTERNATIONAL_ORG" | "SACCO" | "BANK";
+                sector: "BANKING" | "TELECOMMUNICATIONS" | "ENERGY" | "MANUFACTURING" | "AGRICULTURE" | "REAL_ESTATE" | "GOVERNMENT" | "REGULATION" | "DIVERSIFIED" | "INSURANCE" | "FINTECH" | "RETAIL" | "MEDIA" | "TRANSPORT";
+                id: string;
+                name: string;
+                slug: string;
+                subtype: string;
+                founded: number | null;
+                hq: string | null;
+                ownership: string | null;
+                revenue: string | null;
+                employees: string | null;
+                marketCap: string | null;
+                description: string;
+                keyFacts: string[];
+                tags: string[];
+                riskLevel: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+                isActive: boolean;
+                createdAt: Date;
+                updatedAt: Date;
+            };
+        }[];
+    } | undefined>;
+    static delete(id: string): Promise<void>;
+    static addPlayer(eventId: string, playerId: string): Promise<void>;
+    static removePlayer(eventId: string, playerId: string): Promise<void>;
+}
+//# sourceMappingURL=event.service.d.ts.map

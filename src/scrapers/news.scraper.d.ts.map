@@ -1,0 +1,1 @@
+{"version":3,"file":"news.scraper.d.ts","sourceRoot":"","sources":["news.scraper.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,WAAW,EAAE,MAAM,gBAAgB,CAAA;AAC5C,OAAO,EAAE,aAAa,EAAE,MAAM,UAAU,CAAA;AAUxC,qBAAa,WAAY,SAAQ,WAAW;IAC1C,QAAQ,CAAC,IAAI,UAAS;IAEhB,GAAG,IAAI,OAAO,CAAC,aAAa,CAAC;CAkEpC"}
