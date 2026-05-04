@@ -28,7 +28,7 @@ export const DataPointSchema = z.object({
 
 export const GetIndicatorsSchema = z.object({
   page: z.coerce.number().int().positive().default(1),
-  limit: z.coerce.number().int().positive().max(100).default(20),
+  limit: z.coerce.number().int().positive().max(1000).default(20),
 })
 
 export type CreateIndicatorInput = z.infer<typeof CreateIndicatorSchema>

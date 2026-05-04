@@ -89,7 +89,7 @@ export const GetPlayersSchema = z.object({
   search: z.string().optional(),
   riskLevel: z.enum(['LOW', 'MEDIUM', 'HIGH', 'CRITICAL']).optional(),
   page: z.coerce.number().int().positive().default(1),
-  limit: z.coerce.number().int().positive().max(100).default(20),
+  limit: z.coerce.number().int().positive().max(1000).default(20),
 })
 
 export type CreatePlayerInput = z.infer<typeof CreatePlayerSchema>
