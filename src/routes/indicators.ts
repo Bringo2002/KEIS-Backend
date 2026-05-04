@@ -3,7 +3,7 @@ import { IndicatorService } from '../services/indicator.service'
 import { CreateIndicatorSchema, UpdateIndicatorSchema, DataPointSchema, GetIndicatorsSchema } from '../schemas/indicator.schema'
 
 export async function indicatorsRoutes(fastify: FastifyInstance) {
-  // GET /api/indicators
+  // GET /api/indicators - polling endpoint
   fastify.get('/api/indicators', async (request, reply) => {
     const params = GetIndicatorsSchema.parse(request.query)
     const offset = (params.page - 1) * params.limit
@@ -21,6 +21,32 @@ export async function indicatorsRoutes(fastify: FastifyInstance) {
       pages,
     }
   })
+
+  // GET /api/indicators/live - Server-Sent Events for real-time updates
+  fastify.get('/api/indicators/live', (request, reply) => {
+    reply.raw.writeHead(200, {
+      'Content-Type': 'text/event-stream',
+      'Cache-Control': 'no-cache',
+      'Connection': 'keep-alive',
+      'Access-Control-Allow-Origin': '*',
+    })
+
+    reply.raw.write(`data: ${JSON.stringify({ type: 'connected' })}\n\n`)
+
+    const interval = setInterval(async () => {
+      try {
+        const { data } = await IndicatorService.getAll(10, 0) // Latest 10 indicators
+        reply.raw.write(`data: ${JSON.stringify({ type: 'update', indicators: data })}\n\n`)
+      } catch (err) {
+        reply.raw.write(`data: ${JSON.stringify({ type: 'error', message: err instanceof Error ? err.message : String(err) })}\n\n`)
+      }
+    }, 30000) // Update every 30 seconds
+
+    reply.raw.on('close', () => {
+      clearInterval(interval)
+    })
+  })
+
 
   // GET /api/indicators/:slug
   fastify.get('/api/indicators/:slug', async (request, reply) => {

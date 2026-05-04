@@ -9,20 +9,20 @@ import { logger } from '../utils/logger'
 export function startSchedulers() {
   logger.info('Starting scheduled tasks')
 
-  // CBK: every 6 hours
-  cron.schedule('0 */6 * * *', () => {
+// CBK: every 5min during market hours (EAT 9am-5pm = UTC 6-14 weekdays)
+  cron.schedule('*/5 6-14 * * 1-5', () => {
     logger.info('Scheduled: CBK scraper')
     scraperQueue?.add('scrape-cbk', { scraperName: 'cbk' })
   })
 
-  // NSE: hourly, weekdays 9am-5pm EAT (adjusted for UTC)
-  cron.schedule('0 6-14 * * 1-5', () => {
+// NSE: every 5min during market hours (EAT 9am-5pm = UTC 6-14 weekdays)
+  cron.schedule('*/5 6-14 * * 1-5', () => {
     logger.info('Scheduled: NSE scraper')
     scraperQueue?.add('scrape-nse', { scraperName: 'nse' })
   })
 
-  // News: every 2 hours
-  cron.schedule('0 */2 * * *', () => {
+// News: hourly 
+  cron.schedule('0 * * * *', () => {
     logger.info('Scheduled: News scraper')
     scraperQueue?.add('scrape-news', { scraperName: 'news' })
   })
