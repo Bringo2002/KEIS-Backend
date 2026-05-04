@@ -1,4 +1,4 @@
-import { players, relationships, economicEvents, macroIndicators } from '../drizzle/schema'
+import { players, relationships, economicEvents, macroIndicators } from '../../drizzle/schema'
 import { InferInsertModel, InferSelectModel } from 'drizzle-orm'
 
 // Players

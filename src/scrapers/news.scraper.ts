@@ -19,7 +19,7 @@ export class NewsScraper extends BaseScraper {
 
     for (const feed of RSS_FEEDS) {
       try {
-        const response = await fetch(feed, { timeout: 10000 })
+        const response = await fetch(feed, { signal: AbortSignal.timeout(10000) })
         if (!response.ok) throw new Error(`Failed to fetch: ${response.statusText}`)
 
         const xml = await response.text()
@@ -47,7 +47,7 @@ export class NewsScraper extends BaseScraper {
 
             // Fetch full article
             try {
-              const articleResponse = await fetch(link, { timeout: 5000 })
+              const articleResponse = await fetch(link, { signal: AbortSignal.timeout(5000) })
               if (!articleResponse.ok) throw new Error('Failed to fetch article')
 
               const articleHtml = await articleResponse.text()

@@ -20,7 +20,7 @@ export class WorldBankScraper extends BaseScraper {
       try {
         const url = `https://api.worldbank.org/v2/country/KEN/indicator/${indicator.code}?format=json&per_page=24&date=2000:2024`
 
-        const response = await fetch(url, { timeout: 10000 })
+        const response = await fetch(url, { signal: AbortSignal.timeout(10000) })
         if (!response.ok) throw new Error(`Failed to fetch: ${response.statusText}`)
 
         const data = (await response.json()) as any

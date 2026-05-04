@@ -54,9 +54,10 @@ async function handleExtractEvent(payload: any) {
     sourceUrl: url,
     isAiExtracted: true,
     playerIds: extracted.playerIds,
+    tags: [],
   })
 
-  logger.info(`Created event: ${event.id}`)
+  logger.info(`Created event: ${event?.id}`)
 
   return event
 }

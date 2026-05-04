@@ -11,7 +11,7 @@ import { closeAIQueue } from './queues/ai.queue'
 import { ZodError } from 'zod'
 
 const fastify = Fastify({
-  logger: logger,
+  logger: logger as any,
 })
 
 async function start() {
@@ -70,7 +70,7 @@ async function start() {
     })
 
     // Register routes
-    await registerRoutes(fastify)
+    await registerRoutes(fastify as any)
 
     // Start schedulers
     startSchedulers()
