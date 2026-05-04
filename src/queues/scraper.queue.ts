@@ -19,56 +19,61 @@ const scraperMap: Record<string, any> = {
   worldbank: WorldBankScraper,
 }
 
-export const scraperWorker = new Worker('scrapers', async (job) => {
-  const { scraperName } = job.data as { scraperName: string }
+export const scraperWorker = redis
+  ? new Worker(
+      'scrapers',
+      async (job) => {
+        const { scraperName } = job.data as { scraperName: string }
 
-  const startedAt = new Date()
+        const startedAt = new Date()
 
-  logger.info(`Starting scraper: ${scraperName}`)
+        logger.info(`Starting scraper: ${scraperName}`)
 
-  try {
-    const ScraperClass = scraperMap[scraperName]
-    if (!ScraperClass) {
-      throw new Error(`Unknown scraper: ${scraperName}`)
-    }
+        try {
+          const ScraperClass = scraperMap[scraperName]
+          if (!ScraperClass) {
+            throw new Error(`Unknown scraper: ${scraperName}`)
+          }
 
-    const scraper = new ScraperClass()
-    const result = await scraper.run()
+          const scraper = new ScraperClass()
+          const result = await scraper.run()
 
-    // Log successful run
-    await db.insert(scraperRuns).values({
-      scraperName,
-      status: 'SUCCESS',
-      itemsFound: result.itemsFound,
-      itemsNew: result.itemsNew,
-      startedAt,
-      completedAt: new Date(),
-    })
+          await db.insert(scraperRuns).values({
+            scraperName,
+            status: 'SUCCESS',
+            itemsFound: result.itemsFound,
+            itemsNew: result.itemsNew,
+            startedAt,
+            completedAt: new Date(),
+          })
 
-    logger.info(`Scraper ${scraperName} completed: found ${result.itemsFound}, new ${result.itemsNew}`)
+          logger.info(`Scraper ${scraperName} completed: found ${result.itemsFound}, new ${result.itemsNew}`)
 
-    return result
-  } catch (err: any) {
-    logger.error(`Scraper ${scraperName} failed:`, err)
+          return result
+        } catch (err: unknown) {
+          const message = err instanceof Error ? err.message : String(err)
+          logger.error(`Scraper ${scraperName} failed:`, err)
 
-    // Log failed run
-    await db.insert(scraperRuns).values({
-      scraperName,
-      status: 'FAILED',
-      error: err.message,
-      startedAt,
-      completedAt: new Date(),
-    })
+          await db.insert(scraperRuns).values({
+            scraperName,
+            status: 'FAILED',
+            error: message,
+            startedAt,
+            completedAt: new Date(),
+          })
 
-    throw err
-  }
-}, { connection: redis!, concurrency: 2 })
+          throw err
+        }
+      },
+      { connection: redis, concurrency: 2 }
+    )
+  : null
 
-scraperWorker.on('failed', (job, err) => {
+scraperWorker?.on('failed', (job, err) => {
   logger.error(`Job ${job?.id} failed:`, err)
 })
 
 export async function closeScraperQueue() {
   await scraperQueue?.close()
-  await scraperWorker.close()
+  await scraperWorker?.close()
 }

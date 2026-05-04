@@ -8,32 +8,37 @@ import { EventService } from '../services/event.service'
 
 export const aiQueue = redis ? new Queue('ai', { connection: redis }) : null
 
-export const aiWorker = new Worker(
-  'ai',
-  async (job) => {
-    const { type, payload } = job.data
+export const aiWorker = redis
+  ? new Worker(
+      'ai',
+      async (job) => {
+        const { type, payload } = job.data as { type: string; payload: Record<string, unknown> }
 
-    logger.info(`Processing AI job: ${type}`)
+        logger.info(`Processing AI job: ${type}`)
 
-    try {
-      if (type === 'extract-event') {
-        return await handleExtractEvent(payload as any)
-      } else if (type === 'update-profile') {
-        return await handleUpdateProfile(payload as any)
-      } else if (type === 'analyze-risk') {
-        return await handleAnalyzeRisk(payload as any)
-      } else {
-        throw new Error(`Unknown AI job type: ${type}`)
-      }
-    } catch (err: any) {
-      logger.error(`AI job ${type} failed:`, err)
-      throw err
-    }
-  },
-  { connection: redis!, concurrency: 5, limiter: { max: 50, duration: 60_000 } }
-)
+        try {
+          if (type === 'extract-event') {
+            return await handleExtractEvent(payload as ExtractEventPayload)
+          }
+          if (type === 'update-profile') {
+            return await handleUpdateProfile(payload as { playerId: string })
+          }
+          if (type === 'analyze-risk') {
+            return await handleAnalyzeRisk(payload as { playerId: string })
+          }
+          throw new Error(`Unknown AI job type: ${type}`)
+        } catch (err: unknown) {
+          logger.error(`AI job ${type} failed:`, err)
+          throw err
+        }
+      },
+      { connection: redis, concurrency: 5, limiter: { max: 50, duration: 60_000 } }
+    )
+  : null
 
-async function handleExtractEvent(payload: any) {
+type ExtractEventPayload = { text: string; url: string; date: string }
+
+async function handleExtractEvent(payload: ExtractEventPayload) {
   const { text, url, date } = payload
 
   const extracted = await EventExtractor.extract(text, url)
@@ -62,7 +67,7 @@ async function handleExtractEvent(payload: any) {
   return event
 }
 
-async function handleUpdateProfile(payload: any) {
+async function handleUpdateProfile(payload: { playerId: string }) {
   const { playerId } = payload
 
   const result = await ProfileUpdater.updateProfile(playerId)
@@ -72,7 +77,7 @@ async function handleUpdateProfile(payload: any) {
   return result
 }
 
-async function handleAnalyzeRisk(payload: any) {
+async function handleAnalyzeRisk(payload: { playerId: string }) {
   const { playerId } = payload
 
   const result = await RiskAnalyzer.analyzeRisk(playerId)
@@ -82,23 +87,27 @@ async function handleAnalyzeRisk(payload: any) {
   return result
 }
 
-aiWorker.on('failed', (job, err) => {
+aiWorker?.on('failed', (job, err) => {
   logger.error(`AI job ${job?.id} failed:`, err)
 })
 
 export async function enqueueExtractEvent(text: string, url: string, date: Date) {
-  return aiQueue?.add('extract-event', { text, url, date }, { attempts: 2 })
+  return aiQueue?.add(
+    'extract-event',
+    { type: 'extract-event', payload: { text, url, date: date.toISOString() } },
+    { attempts: 2 }
+  )
 }
 
 export async function enqueueUpdateProfile(playerId: string) {
-  return aiQueue?.add('update-profile', { playerId }, { attempts: 2 })
+  return aiQueue?.add('update-profile', { type: 'update-profile', payload: { playerId } }, { attempts: 2 })
 }
 
 export async function enqueueAnalyzeRisk(playerId: string) {
-  return aiQueue?.add('analyze-risk', { playerId }, { attempts: 2 })
+  return aiQueue?.add('analyze-risk', { type: 'analyze-risk', payload: { playerId } }, { attempts: 2 })
 }
 
 export async function closeAIQueue() {
   await aiQueue?.close()
-  await aiWorker.close()
+  await aiWorker?.close()
 }
