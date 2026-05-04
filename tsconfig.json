@@ -18,6 +18,6 @@
     "noFallthroughCasesInSwitch": true,
     "outDir": "./dist"
   },
-  "include": ["src/**/*", "drizzle/**/*"],
+  "include": ["src/**/*"],
   "exclude": ["node_modules", "dist"]
 }
